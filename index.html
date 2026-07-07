@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaringan Komputer & Internet | Informatika XI</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#2563eb', /* Blue-600 */
+                        secondary: '#f8fafc', /* Slate-50 */
+                        dark: '#1e293b', /* Slate-800 */
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS for Animations and Specific Styles -->
+    <style>
+        /* Fade-in Animation for Pages */
+        .page-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        
+        .page-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Styling for Nav Links */
+        .nav-link.active {
+            background-color: #eff6ff; /* blue-50 */
+            color: #2563eb; /* blue-600 */
+            border-right: 4px solid #2563eb;
+            font-weight: 600;
+        }
+
+        /* Drag and Drop Specific Styles */
+        .draggable {
+            cursor: grab;
+            transition: all 0.2s;
+        }
+        .draggable:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+        .drop-zone {
+            min-height: 150px;
+            transition: all 0.3s ease;
+        }
+        .drop-zone.drag-over {
+            background-color: #dbeafe; /* blue-100 */
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800 h-screen overflow-hidden flex flex-col md:flex-row">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-white shadow-sm flex items-center justify-between p-4 z-20 relative">
+        <div class="flex items-center gap-2 text-primary font-bold text-lg">
+            <i class="fa-solid fa-network-wired"></i>
+            <span>Informatika XI</span>
+        </div>
+        <button id="mobile-menu-btn" class="text-gray-600 hover:text-primary focus:outline-none text-2xl">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="bg-white w-64 h-full shadow-lg absolute md:relative z-10 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 hidden md:flex items-center gap-3 border-b">
+            <div class="bg-primary text-white p-2 rounded-lg">
+                <i class="fa-solid fa-network-wired text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight text-dark">Informatika</h1>
+                <p class="text-xs text-gray-500">Kelas XI SMA</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 py-4 overflow-y-auto">
+            <p class="px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Materi Belajar</p>
+            <ul class="space-y-1">
+                <li>
+                    <button onclick="navigateTo('beranda')" class="nav-link active w-full flex items-center gap-3 px-6 py-3 text-left text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors" data-target="beranda">
+                        <i class="fa-solid fa-house w-5 text-center"></i> Beranda
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('jaringan')" class="nav-link w-full flex items-center gap-3 px-6 py-3 text-left text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors" data-target="jaringan">
+                        <i class="fa-solid fa-globe w-5 text-center"></i> LAN vs Internet
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('berkabel')" class="nav-link w-full flex items-center gap-3 px-6 py-3 text-left text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors" data-target="berkabel">
+                        <i class="fa-solid fa-plug w-5 text-center"></i> Konektivitas Berkabel
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('nirkabel')" class="nav-link w-full flex items-center gap-3 px-6 py-3 text-left text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors" data-target="nirkabel">
+                        <i class="fa-solid fa-wifi w-5 text-center"></i> Konektivitas Nirkabel
+                    </button>
+                </li>
+            </ul>
+
+            <p class="px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-2">Evaluasi</p>
+            <ul class="space-y-1">
+                <li>
+                    <button onclick="navigateTo('kuis')" class="nav-link w-full flex items-center gap-3 px-6 py-3 text-left text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors" data-target="kuis">
+                        <i class="fa-solid fa-gamepad w-5 text-center"></i> Kuis Interaktif
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('hots')" class="nav-link w-full flex items-center gap-3 px-6 py-3 text-left text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors" data-target="hots">
+                        <i class="fa-solid fa-brain w-5 text-center"></i> Soal HOTS
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="p-4 border-t text-center text-xs text-gray-400">
+            &copy; 2026 Media Pembelajaran
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-0 hidden md:hidden"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 h-full overflow-y-auto bg-gray-50 p-4 md:p-8">
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- SECTION 1: BERANDA -->
+            <section id="beranda" class="page-content active">
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white text-center rounded-t-2xl">
+                        <h1 class="text-3xl md:text-4xl font-bold mb-4">Jaringan Komputer dan Internet</h1>
+                        <p class="text-blue-100 max-w-2xl mx-auto">Selamat datang! Pelajari bagaimana dunia saling terhubung melalui jaringan komputer dan temukan teknologi di baliknya.</p>
+                    </div>
+                    <div class="p-8">
+                        <h2 class="text-2xl font-bold text-dark mb-4 border-b pb-2"><i class="fa-solid fa-lightbulb text-yellow-400 mr-2"></i> Apersepsi (Pentingnya Internet)</h2>
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                            <div class="flex-1 text-gray-600 space-y-4 text-justify leading-relaxed">
+                                <p>
+                                    Internet saat ini merupakan salah satu hal penting yang membantu banyak aspek kehidupan. Bayangkan saja, ketika kita akan membuka rekening baru di bank, kita tidak perlu lagi mengantre panjang di kantor bank. 
+                                </p>
+                                <p>
+                                    Cukup mengakses aplikasi bank yang tersedia secara <i>online</i>, mengisi formulir, dan melakukan verifikasi secara langsung melalui <i>video call</i> dengan petugas. Ini semua dimungkinkan karena adanya konektivitas jaringan.
+                                </p>
+                                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mt-4 text-blue-800">
+                                    <strong>Namun Ingat!</strong> Mengakses internet bukan tanpa masalah. Kita perlu paham cara mengakses internet dengan aman supaya tidak merugikan diri kita, misalnya dengan memproteksi data pribadi kita.
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/3 flex justify-center">
+                                <div class="w-48 h-48 bg-blue-100 rounded-full flex items-center justify-center text-6xl text-primary shadow-inner">
+                                    <i class="fa-solid fa-globe"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: JARINGAN LOKAL VS INTERNET -->
+            <section id="jaringan" class="page-content">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-dark">Jaringan Lokal vs Internet</h1>
+                    <p class="text-gray-500 mt-2">Memahami perbedaan skala dan identitas dalam jaringan.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Jaringan Lokal -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center text-2xl mb-4">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Jaringan Lokal (LAN)</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Jaringan komputer berkabel maupun nirkabel yang menghubungkan perangkat dalam <b>area terbatas</b> seperti tempat tinggal, sekolah, laboratorium, atau gedung kantor. Perangkat hanya bisa diakses oleh perangkat lain di jaringan yang sama.
+                        </p>
+                    </div>
+
+                    <!-- Internet -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-2xl mb-4">
+                            <i class="fa-solid fa-earth-americas"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Internet (WAN)</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Kepanjangan dari <i>interconnection-networking</i>. Sebuah jaringan dengan jangkauan global yang melayani miliaran pengguna di seluruh dunia. Berawal dari proyek ARPANET (1969) oleh Departemen Pertahanan AS.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- IP Address Concept -->
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100">
+                    <h2 class="text-xl font-bold text-dark mb-4 flex items-center"><i class="fa-solid fa-id-card text-primary mr-3"></i> Memahami IP Address</h2>
+                    <div class="bg-gray-50 rounded-lg p-5">
+                        <p class="text-gray-700 mb-4 text-justify">
+                            Sama seperti rumah yang butuh alamat agar tukang paket tidak nyasar, perangkat di jaringan butuh identitas unik yang disebut <b>IP Address (Alamat IP)</b> sebagai alamat pengiriman data.
+                        </p>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="bg-white border border-gray-200 p-4 rounded-lg flex-1 shadow-sm">
+                                <span class="text-xs text-gray-500 uppercase font-bold block mb-1">Contoh IP Address</span>
+                                <span class="text-xl font-mono text-primary font-bold">192.168.0.1</span>
+                                <p class="text-xs text-gray-500 mt-2">Umum digunakan pada perangkat Jaringan Lokal.</p>
+                            </div>
+                            <div class="bg-white border border-gray-200 p-4 rounded-lg flex-1 shadow-sm">
+                                <span class="text-xs text-gray-500 uppercase font-bold block mb-1">Struktur (32-bit)</span>
+                                <span class="text-lg font-mono text-gray-800 font-bold">10101100.<span class="text-gray-400">...</span>.00001110</span>
+                                <p class="text-xs text-gray-500 mt-2">Terdiri atas 32 bit biner yang dipisah menjadi 4 bagian desimal.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: KONEKTIVITAS BERKABEL -->
+            <section id="berkabel" class="page-content">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-dark flex items-center">
+                        <i class="fa-solid fa-plug-circle-check text-primary mr-3"></i> Konektivitas Berkabel
+                    </h1>
+                    <p class="text-gray-500 mt-2">Metode terhubung ke internet menggunakan media kabel isik (coaxial, fiber optik, twisted pair).</p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Dial-Up -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500 flex flex-col md:flex-row gap-6 items-center">
+                        <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-3xl shrink-0">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-dark">Dial-Up PSTN</h3>
+                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">
+                                Memanfaatkan jaringan telepon rumah berbentuk kabel (PSTN). Butuh komputer, modem, dan sambungan telepon. Kecepatan aksesnya sangat lambat, maksimum hanya 56 Kbps. Metode lawas yang populer di awal kemunculan internet.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ADSL -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-indigo-500 flex flex-col md:flex-row gap-6 items-center">
+                        <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center text-3xl shrink-0">
+                            <i class="fa-solid fa-server"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-dark">ADSL (Asymmetric Digital Subscriber Line)</h3>
+                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">
+                                Prinsipnya sama menggunakan jaringan telepon kabel, namun modemnya bekerja pada frekuensi tinggi (34 kHz - 1104 kHz). Kelebihannya, kita bisa mengakses internet dan menggunakan telepon suara secara bersamaan tanpa saling mengganggu.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- LAN -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-cyan-500 flex flex-col md:flex-row gap-6 items-center">
+                        <div class="w-16 h-16 bg-cyan-50 text-cyan-500 rounded-full flex items-center justify-center text-3xl shrink-0">
+                            <i class="fa-solid fa-network-wired"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-dark">LAN (Local Area Network)</h3>
+                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">
+                                Menggunakan satu komputer server yang terhubung internet. Komputer lain (*client*) cukup terkoneksi ke server menggunakan kartu LAN (LAN Card) dan kabel UTP. Cakupannya terbatas untuk wilayah kecil seperti lab sekolah atau warnet.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: KONEKTIVITAS NIRKABEL -->
+            <section id="nirkabel" class="page-content">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-dark flex items-center">
+                        <i class="fa-solid fa-wifi text-primary mr-3"></i> Konektivitas Nirkabel
+                    </h1>
+                    <p class="text-gray-500 mt-2">Jaringan tanpa kabel (*wireless connection*) menggunakan gelombang radio, mikro, atau cahaya inframerah.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- GPRS -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col text-center items-center">
+                        <div class="w-16 h-16 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-2xl mb-4">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">GPRS</h3>
+                        <span class="text-xs font-semibold text-gray-400 uppercase mb-3">General Packet Radio Service</span>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Menggunakan gelombang radio untuk komunikasi data dan suara pada ponsel ber-tipe GSM. Biasa dipakai untuk transfer paket data, email, hingga internet dasar di HP.
+                        </p>
+                    </div>
+
+                    <!-- Wi-Fi -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col text-center items-center">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center text-2xl mb-4">
+                            <i class="fa-solid fa-router"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Wi-Fi</h3>
+                        <span class="text-xs font-semibold text-gray-400 uppercase mb-3">Wireless Fidelity</span>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Sistem standar tanpa kabel yang sangat praktis. Memakai frekuensi tinggi (spektrum 2,4 GHz atau 5 GHz). Keunggulannya praktis, namun memiliki jangkauan jarak yang terbatas.
+                        </p>
+                    </div>
+
+                    <!-- Satelit -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col text-center items-center">
+                        <div class="w-16 h-16 bg-purple-100 text-purple-500 rounded-full flex items-center justify-center text-2xl mb-4">
+                            <i class="fa-solid fa-satellite-dish"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Akses Satelit</h3>
+                        <span class="text-xs font-semibold text-gray-400 uppercase mb-3">Satellite Internet</span>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Layanan internet yang memakai antena parabola. Kecepatan akses cukup tinggi dan cakupan luas (bisa di daerah terpencil), namun biayanya jauh lebih mahal.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: KUIS INTERAKTIF (DRAG & DROP) -->
+            <section id="kuis" class="page-content">
+                <div class="bg-white rounded-2xl shadow-sm p-6 md:p-8">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-dark mb-2">Simulasi Pengelompokan Jaringan</h2>
+                        <p class="text-gray-600 text-sm">Tarik dan letakkan (*Drag & Drop*) jenis-jenis koneksi di bawah ini ke dalam kotak kategori yang tepat!</p>
+                    </div>
+
+                    <!-- Draggable Items -->
+                    <div class="flex flex-wrap gap-3 justify-center mb-10" id="item-container">
+                        <div id="item-dialup" data-type="berkabel" draggable="true" class="draggable bg-white border-2 border-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow-sm font-semibold text-sm hover:border-primary hover:text-primary">Dial-Up PSTN</div>
+                        
+                        <div id="item-wifi" data-type="nirkabel" draggable="true" class="draggable bg-white border-2 border-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow-sm font-semibold text-sm hover:border-primary hover:text-primary">Wi-Fi</div>
+                        
+                        <div id="item-adsl" data-type="berkabel" draggable="true" class="draggable bg-white border-2 border-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow-sm font-semibold text-sm hover:border-primary hover:text-primary">ADSL</div>
+                        
+                        <div id="item-gprs" data-type="nirkabel" draggable="true" class="draggable bg-white border-2 border-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow-sm font-semibold text-sm hover:border-primary hover:text-primary">GPRS (Seluler)</div>
+                        
+                        <div id="item-lan" data-type="berkabel" draggable="true" class="draggable bg-white border-2 border-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow-sm font-semibold text-sm hover:border-primary hover:text-primary">LAN (Kabel UTP)</div>
+                        
+                        <div id="item-satelit" data-type="nirkabel" draggable="true" class="draggable bg-white border-2 border-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow-sm font-semibold text-sm hover:border-primary hover:text-primary">Akses Satelit</div>
+                    </div>
+
+                    <!-- Drop Zones -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Dropzone Berkabel -->
+                        <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col drop-zone" id="zone-berkabel" data-category="berkabel">
+                            <h3 class="text-center font-bold text-gray-700 mb-4 pb-2 border-b-2 border-gray-200 uppercase text-sm tracking-wider"><i class="fa-solid fa-plug text-primary mr-2"></i> Kategori Berkabel</h3>
+                            <div class="flex-1 flex flex-wrap gap-2 content-start min-h-[100px]" id="drop-area-berkabel">
+                                <!-- Items will be dropped here -->
+                            </div>
+                        </div>
+
+                        <!-- Dropzone Nirkabel -->
+                        <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col drop-zone" id="zone-nirkabel" data-category="nirkabel">
+                            <h3 class="text-center font-bold text-gray-700 mb-4 pb-2 border-b-2 border-gray-200 uppercase text-sm tracking-wider"><i class="fa-solid fa-wifi text-primary mr-2"></i> Kategori Nirkabel</h3>
+                            <div class="flex-1 flex flex-wrap gap-2 content-start min-h-[100px]" id="drop-area-nirkabel">
+                                <!-- Items will be dropped here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Feedback/Result Area -->
+                    <div id="quiz-feedback" class="mt-8 text-center hidden">
+                        <div class="inline-block bg-green-100 text-green-700 px-6 py-3 rounded-full font-bold text-lg animate-bounce">
+                            <i class="fa-solid fa-circle-check mr-2"></i> Luar Biasa! Semua kategori benar!
+                        </div>
+                        <button onclick="resetQuiz()" class="block mx-auto mt-4 text-sm text-primary hover:underline font-semibold">Coba Lagi</button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- SECTION 6: SOAL HOTS -->
+            <section id="hots" class="page-content">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-dark flex items-center">
+                        <i class="fa-solid fa-brain text-primary mr-3"></i> Evaluasi (Soal HOTS)
+                    </h1>
+                    <p class="text-gray-500 mt-2">Uji kemampuan analisis, evaluasi, dan pemecahan masalahmu terkait jaringan komputer dan internet.</p>
+                </div>
+
+                <form onsubmit="event.preventDefault(); alert('Luar biasa! Jawabanmu berhasil disimpan ke sistem evaluasi guru.');">
+                    
+                    <!-- A. PILIHAN GANDA (10 Soal) -->
+                    <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 mb-6">
+                        <h2 class="text-xl font-bold text-dark mb-4 border-b pb-2">A. Pilihan Ganda</h2>
+                        <p class="text-sm text-gray-500 mb-6">Pilih satu jawaban analisis yang paling tepat dari opsi a, b, c, d, atau e!</p>
+                        
+                        <div class="space-y-8">
+                            <!-- Soal 1 -->
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">1. Budi membangun jaringan di laboratorium sekolah. IP address yang digunakan 192.168.0.1 hingga 192.168.0.20. Suatu hari, Budi tidak bisa mengakses website berita luar negeri, padahal pertukaran file antar komputer di dalam lab (lokal) tetap lancar. Berdasarkan konsep arsitektur jaringan, penyebab utama yang paling logis adalah...</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg1" class="mt-1"> a) Kabel UTP (LAN) yang menghubungkan komputer Budi putus.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg1" class="mt-1"> b) Switch/Hub di dalam laboratorium mengalami kerusakan total.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg1" class="mt-1"> c) Koneksi modem utama yang menghubungkan jaringan ke Internet Service Provider (ISP) terputus.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg1" class="mt-1"> d) IP Address yang digunakan merupakan IP Public sehingga bentrok.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg1" class="mt-1"> e) Komputer Budi terkena virus yang menghapus sistem operasi secara keseluruhan.</label>
+                                </div>
+                            </div>
+
+                            <!-- Soal 2 -->
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">2. Sebuah perusahaan riset kelautan beroperasi di tengah samudra yang jauh dari daratan utama. Mereka membutuhkan koneksi internet untuk mengirim data penting secara real-time. Menimbang kelebihan dan kekurangannya, konektivitas apa yang mutlak harus mereka pilih dan mengapa?</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg2" class="mt-1"> a) Dial-Up PSTN, karena kabel telepon bawah laut mudah dipasang di kapal.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg2" class="mt-1"> b) ADSL, karena frekuensinya lebih tinggi dan tahan ombak.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg2" class="mt-1"> c) Wi-Fi publik, karena perusahaan dapat memasang router gratis di atas kapal.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg2" class="mt-1"> d) Jaringan GPRS/GSM, karena antena BTS selalu ada di sepanjang samudra.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg2" class="mt-1"> e) Akses Satelit, karena jangkauannya mencakup area terpencil di mana tidak mungkin dipasang infrastruktur kabel.</label>
+                                </div>
+                            </div>
+
+                            <!-- Soal 3 -->
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">3. Mengingat ADSL memanfaatkan infrastruktur kabel telepon (PSTN) yang sama dengan Dial-Up, apa inovasi rekayasa frekuensi yang membedakan ADSL sehingga pengguna bisa berselancar di internet tanpa harus mematikan panggilan telepon suara?</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg3" class="mt-1"> a) ADSL menggunakan kabel serat optik ganda sebagai pengganti tembaga telepon.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg3" class="mt-1"> b) Modem ADSL memisahkan spektrum frekuensi rendah (di bawah 4 kHz) untuk suara dan frekuensi tinggi (34-1104 kHz) untuk data.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg3" class="mt-1"> c) ADSL bekerja sepenuhnya secara nirkabel setelah terhubung ke soket dinding.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg3" class="mt-1"> d) Teknologi ADSL mengompresi suara menjadi teks saat internet sedang berjalan.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg3" class="mt-1"> e) ADSL memutus koneksi telepon sesaat hanya saat data diunduh (download).</label>
+                                </div>
+                            </div>
+
+                            <!-- Soal 4 -->
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">4. Saat membuka rekening bank melalui mekanisme online (video call, verifikasi KTP elektronik), pengguna diminta untuk tidak menggunakan Wi-Fi publik (kafe/bandara). Apa ancaman *cybersecurity* paling rasional dari hal ini terhadap proteksi data pribadi?</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg4" class="mt-1"> a) Kecepatan Wi-Fi publik membatasi durasi panggilan video dengan bank.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg4" class="mt-1"> b) Alamat IP lokal pada Wi-Fi publik selalu merusak server bank.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg4" class="mt-1"> c) Jaringan nirkabel publik umumnya tidak dienkripsi kuat, sehingga *hacker* yang terhubung di jaringan sama dapat dengan mudah menyadap aliran data sensitif (KTP/wajah).</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg4" class="mt-1"> d) Gelombang radio Wi-Fi publik merusak piksel foto KTP saat dikirimkan.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg4" class="mt-1"> e) Jaringan LAN bank akan mendeteksi virus secara otomatis dari jarak jauh.</label>
+                                </div>
+                            </div>
+
+                            <!-- Soal 5 -->
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">5. IP Address versi 4 (IPv4) seperti 192.168.0.x terdiri dari 32 bit dan memiliki batas maksimal alamat di seluruh dunia. Konsekuensi apa yang memaksa teknologi membuat perbedaan antara IP Public (terhubung ISP) dan IP Privat (untuk LAN)?</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg5" class="mt-1"> a) Agar kecepatan lokal lebih lambat dari kecepatan global.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg5" class="mt-1"> b) Karena keterbatasan jumlah total IP Public, maka jutaan perangkat di dalam LAN rumah cukup berbagi menggunakan alamat IP Privat lalu diwakilkan 1 IP Public milik modem.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg5" class="mt-1"> c) Agar pemerintah dapat memblokir setiap komputer secara spesifik di tiap rumah.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg5" class="mt-1"> d) Karena IP Public tidak bisa menggunakan bilangan desimal.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg5" class="mt-1"> e) Untuk mempersulit pengguna dalam membangun jaringan LAN pribadi di sekolah.</label>
+                                </div>
+                            </div>
+
+                            <!-- Soal 6 -->
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">6. Jika sebuah sekolah bermigrasi total dari jaringan Dial-Up PSTN ke infrastruktur Local Area Network (LAN) yang terkoneksi fiber optik kecepatan tinggi dari ISP, dampak paling sistemik dalam ekosistem pembelajaran daring adalah...</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg6" class="mt-1"> a) Keamanan data sekolah menjadi sangat rentan tanpa proteksi apapun karena internet semakin cepat.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg6" class="mt-1"> b) Biaya operasional telepon bulanan meledak karena dihitung berdasarkan lamanya internet aktif (tarif per menit).</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg6" class="mt-1"> c) Siswa dan guru kini bisa berkolaborasi menggunakan media multimedia interaktif dan video konferensi secara serentak (bersama-sama) yang sebelumnya mustahil dengan batas 56 Kbps.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg6" class="mt-1"> d) Komputer klien di sekolah tidak membutuhkan IP Address lagi untuk saling berkomunikasi.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg6" class="mt-1"> e) Proses pembelajaran hanya bisa dilakukan ketika kabel telepon konvensional dilepas.</label>
+                                </div>
+                            </div>
+
+                            <!-- Soal 7 -->
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">7. Dalam tugas "Perancangan Jaringan Komputer" (Aktivitas JKI-K10-01-U), Ani menggunakan beberapa Switch (Hub). Dari perspektif efisiensi struktural dan topologi jaringan, menempatkan satu sentral Switch untuk mengumpulkan cabang-cabang (berjenjang) lebih baik daripada membuat satu kabel panjang langsung dari tiap komputer ke modem, karena...</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg7" class="mt-1"> a) Memperindah tampilan rumah Ani.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg7" class="mt-1"> b) Lebih hemat total panjang kabel (biaya pasang lebih murah) dan memudahkan pelacakan (troubleshooting) jika ada 1 blok komputer yang mati.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg7" class="mt-1"> c) Switch mampu memberikan koneksi nirkabel (Wi-Fi) tanpa batas jarak ke segala arah.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg7" class="mt-1"> d) Menggunakan banyak kabel panjang akan meningkatkan kecepatan internet berlipat ganda.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg7" class="mt-1"> e) Modem bawaan ISP biasanya selalu memiliki lebih dari 20 port yang siap dicolok langsung.</label>
+                                </div>
+                            </div>
+
+                            <!-- Soal 8 -->
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">8. ARPANET berevolusi dari proyek riset keamanan pertahanan menjadi infrastruktur publik. Konsep utama dari "Packet Switching Communication Protocol" yang mendasari jaringan ini (dibandingkan circuit jaringan telepon lama) adalah...</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg8" class="mt-1"> a) Hanya boleh digunakan oleh pejabat negara dan militer elit.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg8" class="mt-1"> b) Mengunci satu jalur isik secara eksklusif (dari awal sampai akhir) selama dua komputer terhubung.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg8" class="mt-1"> c) Mengharuskan pertukaran data melalui cahaya satelit saja.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg8" class="mt-1"> d) Memotong data besar menjadi bagian-bagian (paket) kecil independen yang mencari rute tercepatnya masing-masing, sehingga jaringan tidak mudah runtuh walau ada simpul yang hancur.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg8" class="mt-1"> e) Mengubah frekuensi radio menjadi bilangan desimal untuk mencegah pencurian data.</label>
+                                </div>
+                            </div>
+
+                            <!-- Soal 9 -->
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">9. Seorang peneliti membandingkan transmisi data GPRS (menggunakan gelombang radio seluler) dengan teknologi Wi-Fi (frekuensi 2,4 GHz). Kekurangan teknis mendasar dari Wi-Fi dibandingkan infrastruktur GPRS dalam konteks mobilitas adalah...</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg9" class="mt-1"> a) Kecepatan Wi-Fi jauh lebih rendah dibandingkan generasi GPRS.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg9" class="mt-1"> b) Wi-Fi sangat mahal untuk dipasang di satu bangunan saja.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg9" class="mt-1"> c) Daya jangkau (coverage area) Wi-Fi sangat terbatas dalam satu gedung/lokasi, sedangkan jaringan Base Transceiver Station (BTS) seluler membentang hingga berpuluh kilometer mengikuti pegerakan alat komunikasi.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg9" class="mt-1"> d) Ponsel masa kini sudah tidak lagi dipasang cip penangkap sinyal Wi-Fi.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg9" class="mt-1"> e) GPRS tidak membutuhkan perangkat seperti HP, melainkan cukup kabel fiber.</label>
+                                </div>
+                            </div>
+
+                            <!-- Soal 10 -->
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">10. "Sebuah dokumen kontrak dikirim dari Jakarta ke Jepang via Email menggunakan jaringan internet." Jika pengirim sangat memahami konsep proteksi data, langkah enkripsi (penyandian) yang diterapkan pada *file* lampiran sebelum dikirimkan memiliki fungsi analitik untuk mencegah...</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg10" class="mt-1"> a) Penerima di Jepang mengubah isi kontrak.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg10" class="mt-1"> b) File tersebut terlalu berat untuk lewat dalam batas bandwidth jaringan lokal.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg10" class="mt-1"> c) Terjadinya intersepsi (penyadapan di tengah jalan antar *node* global) yang memungkinkan isi data *plain-text* dibaca oleh peretas yang berhasil menjebol aliran paket data.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg10" class="mt-1"> d) Adanya keterlambatan pengiriman email dari server pusat SMTP.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer hover:text-primary"><input type="radio" name="pg10" class="mt-1"> e) Kehilangan file karena dihapus oleh satelit.</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- B. BENAR / SALAH (5 Soal) -->
+                    <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 mb-6">
+                        <h2 class="text-xl font-bold text-dark mb-4 border-b pb-2">B. Benar atau Salah</h2>
+                        <p class="text-sm text-gray-500 mb-6">Pilih pernyataan di bawah ini mengandung argumen konsep yang Benar atau Salah.</p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex flex-col md:flex-row justify-between gap-4 border-b pb-4">
+                                <p class="text-sm text-gray-700 flex-1"><strong>1.</strong> Meskipun terhubung ke jaringan fisik LAN (switch) yang sama, dua komputer belum tentu dapat saling berkomunikasi jika masing-masing tidak diberi identitas (IP Address) yang sesuai pada segmen logis yang sama.</p>
+                                <div class="flex gap-4 shrink-0">
+                                    <label class="cursor-pointer text-sm font-semibold hover:text-green-600"><input type="radio" name="bs1" value="Benar" class="mr-1"> Benar</label>
+                                    <label class="cursor-pointer text-sm font-semibold hover:text-red-600"><input type="radio" name="bs1" value="Salah" class="mr-1"> Salah</label>
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:flex-row justify-between gap-4 border-b pb-4">
+                                <p class="text-sm text-gray-700 flex-1"><strong>2.</strong> Koneksi Akses Satelit umumnya memberikan latensi (waktu tunggu kedatangan sinyal) yang lebih cepat jika dibandingkan dengan koneksi kabel serat optik darat (LAN modern/ADSL), karena sinyal satelit tidak perlu menembus tanah.</p>
+                                <div class="flex gap-4 shrink-0">
+                                    <label class="cursor-pointer text-sm font-semibold hover:text-green-600"><input type="radio" name="bs2" value="Benar" class="mr-1"> Benar</label>
+                                    <label class="cursor-pointer text-sm font-semibold hover:text-red-600"><input type="radio" name="bs2" value="Salah" class="mr-1"> Salah</label>
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:flex-row justify-between gap-4 border-b pb-4">
+                                <p class="text-sm text-gray-700 flex-1"><strong>3.</strong> Fungsi modem pada sistem Dial-Up PSTN adalah mengkonversi sinyal digital dari komputer (bit 0 dan 1) menjadi sinyal suara (analog) agar bisa merambat melintasi jaringan infrastruktur kabel telepon rumah klasik.</p>
+                                <div class="flex gap-4 shrink-0">
+                                    <label class="cursor-pointer text-sm font-semibold hover:text-green-600"><input type="radio" name="bs3" value="Benar" class="mr-1"> Benar</label>
+                                    <label class="cursor-pointer text-sm font-semibold hover:text-red-600"><input type="radio" name="bs3" value="Salah" class="mr-1"> Salah</label>
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:flex-row justify-between gap-4 border-b pb-4">
+                                <p class="text-sm text-gray-700 flex-1"><strong>4.</strong> Membuka website perbankan yang menggunakan protokol "HTTP" (tanpa S / Secure) saat terhubung ke Wi-Fi terbuka sangat dianjurkan untuk mempercepat proses validasi video call.</p>
+                                <div class="flex gap-4 shrink-0">
+                                    <label class="cursor-pointer text-sm font-semibold hover:text-green-600"><input type="radio" name="bs4" value="Benar" class="mr-1"> Benar</label>
+                                    <label class="cursor-pointer text-sm font-semibold hover:text-red-600"><input type="radio" name="bs4" value="Salah" class="mr-1"> Salah</label>
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:flex-row justify-between gap-4 border-b pb-4">
+                                <p class="text-sm text-gray-700 flex-1"><strong>5.</strong> Alamat IP (IP Address) bertindak selayaknya alamat rumah untuk sebuah perangkat. Setiap perangkat yang terhubung dalam satu jaringan yang sama tidak diizinkan memiliki angka IP (identitas) yang kembar/identik untuk mencegah tabrakan data (conflict).</p>
+                                <div class="flex gap-4 shrink-0">
+                                    <label class="cursor-pointer text-sm font-semibold hover:text-green-600"><input type="radio" name="bs5" value="Benar" class="mr-1"> Benar</label>
+                                    <label class="cursor-pointer text-sm font-semibold hover:text-red-600"><input type="radio" name="bs5" value="Salah" class="mr-1"> Salah</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- C. PILIHAN GANDA KOMPLEKS / CHECKLIST (5 Soal) -->
+                    <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 mb-6">
+                        <h2 class="text-xl font-bold text-dark mb-4 border-b pb-2">C. Pilihan Ganda Kompleks (Checklist)</h2>
+                        <p class="text-sm text-gray-500 mb-6">Ceklis <strong>semua</strong> jawaban yang benar pada setiap pernyataan. Terdapat lebih dari 1 jawaban benar per soal.</p>
+                        
+                        <div class="space-y-6">
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">1. Manakah dari masalah operasional perusahaan berikut yang bisa diatasi dengan membangun sebuah arsitektur jaringan LAN (Local Area Network) murni secara *offline* di sebuah kantor tertutup?</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk1" class="mt-1 text-primary focus:ring-primary"> Mengirim email secara massal ke klien di luar negeri.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk1" class="mt-1 text-primary focus:ring-primary"> Memusatkan data dokumen rahasia HRD di satu komputer server sehingga mudah dicadangkan (backup) oleh tim lokal.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk1" class="mt-1 text-primary focus:ring-primary"> Memungkinkan 5 ruangan berbeda mencetak (print) dari satu printer bersama tanpa harus memindahkan kabel isik printer tersebut.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk1" class="mt-1 text-primary focus:ring-primary"> Mendaftarkan domain website agar perusahaan bisa tampil di pencarian Google global.</label>
+                                </div>
+                            </div>
+                            
+                            <div class="text-gray-700 text-sm mt-6">
+                                <p class="font-bold mb-2">2. Ketika menganalisis skema tugas dari kasus Ani (Aktivitas JKI-K10-01-U), hal-hal apa saja yang merupakan bahan pertimbangan krusial bagi teknisi dalam menyusun strategi interkoneksi LAN (meminimalkan biaya) di dalam rumah?</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk2" class="mt-1 text-primary focus:ring-primary"> Pemetaan titik sentral (hub/switch) berdasarkan kedekatannya (jarak/meter kabel terpendek) dengan kumpulan komputer.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk2" class="mt-1 text-primary focus:ring-primary"> Batas jumlah ketersediaan 'port' lubang kabel (misalnya maksimal 3 per switch).</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk2" class="mt-1 text-primary focus:ring-primary"> Langganan paket internet seluler GPRS untuk masing-masing komputer Ani.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk2" class="mt-1 text-primary focus:ring-primary"> Keberadaan IP Public yang melekat eksklusif pada setiap perangkat client di rumah.</label>
+                                </div>
+                            </div>
+
+                            <div class="text-gray-700 text-sm mt-6">
+                                <p class="font-bold mb-2">3. Pernyataan analitis mana yang benar terkait perbedaan karakteristik spesifik antara Jaringan ADSL dan metode klasik Dial-Up PSTN?</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk3" class="mt-1 text-primary focus:ring-primary"> Keduanya tetap bergantung pada pilar infrastruktur perutean kabel telepon rumah darat.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk3" class="mt-1 text-primary focus:ring-primary"> ADSL memiliki kecepatan transmisi data jauh melampaui rentang kecepatan terbatas 56 Kbps milik Dial-Up.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk3" class="mt-1 text-primary focus:ring-primary"> Keduanya menggunakan media transmisi berupa gelombang mikro satelit antar kota.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk3" class="mt-1 text-primary focus:ring-primary"> ADSL berstatus memisahkan alokasi frekuensi, sehingga aktivitas bertelepon dan berselancar internet berjalan bersama tanpa memutus salah satu jalur.</label>
+                                </div>
+                            </div>
+
+                            <div class="text-gray-700 text-sm mt-6">
+                                <p class="font-bold mb-2">4. Identifikasikan manakah konsekuensi nyata dan berisiko tinggi apabila kita mengabaikan proteksi dan perlindungan data pribadi saat terkoneksi ke jaringan internet raksasa!</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk4" class="mt-1 text-primary focus:ring-primary"> Data identitas (KTP) rentan diretas (Identity Theft) untuk disalahgunakan dalam penipuan daring, seperti pinjaman online tak berizin.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk4" class="mt-1 text-primary focus:ring-primary"> Kerugian inansial akibat akses tidak sah ke aplikasi internet banking melalui penyadapan lalu lintas jaringan yang tidak tersandikan (plain-text).</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk4" class="mt-1 text-primary focus:ring-primary"> Komputer pengguna secara isik menjadi lebih berat ukurannya jika terjangkit malware jaringan.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk4" class="mt-1 text-primary focus:ring-primary"> Tereksposnya jejak digital dan profil perilaku (behavioral targeting) yang dieksploitasi untuk memanipulasi preferensi pengguna.</label>
+                                </div>
+                            </div>
+
+                            <div class="text-gray-700 text-sm mt-6">
+                                <p class="font-bold mb-2">5. Kondisi geograis Indonesia yang didominasi pegunungan tinggi, selat, dan hutan lebat menjadikan pembangunan jaringan sangat menantang. Apa kelebihan mendasar opsi Akses Satelit dalam menjawab tantangan ini?</p>
+                                <div class="space-y-1 ml-4 mt-2">
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk5" class="mt-1 text-primary focus:ring-primary"> Tidak membutuhkan penarikan kabel transmisi isik darat (fiber/koaksial) yang memakan waktu dan biaya ratusan kilometer tembus hutan.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk5" class="mt-1 text-primary focus:ring-primary"> Menghasilkan kecepatan tanpa adanya *delay* (latensi nol ms) sama sekali.</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk5" class="mt-1 text-primary focus:ring-primary"> Memberikan kemampuan jangkauan pancaran parabola yang teramat luas (coverage area universal per satelit).</label>
+                                    <label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" name="chk5" class="mt-1 text-primary focus:ring-primary"> Perangkat parabola dan infrastruktur pendukungnya sangatlah murah serta terjangkau bagi penduduk pedesaan dibanding Wi-Fi.</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- D. ESAI (5 Soal) -->
+                    <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-xl font-bold text-dark mb-4 border-b pb-2">D. Uraian Esai</h2>
+                        <p class="text-sm text-gray-500 mb-6">Jawablah pertanyaan di bawah ini dengan menyertakan argumen komprehensif, kritis, dan masuk akal.</p>
+                        
+                        <div class="space-y-6">
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">1. Analisislah! Mengapa institusi sensitif seperti perbankan pusat (Server Database utama) lebih sering memilih menggunakan topologi konektivitas berkabel serat optik murni di dalam jaringan internalnya dibanding bergantung pada kecanggihan dan kepraktisan Wi-Fi berkecepatan tinggi?</p>
+                                <textarea class="w-full border border-gray-300 rounded-lg p-3 mt-2 focus:ring-2 focus:ring-primary outline-none" rows="3" placeholder="Tulis analisis Anda di sini..."></textarea>
+                            </div>
+                            
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">2. Berdasarkan prinsip kerjanya, sebuah *packet switching communication protocol* memecah file dokumen utuh menjadi paket-paket kecil. Menurut penalaranmu, apa kerugiannya bagi sebuah website skala global jika teknologi ini tidak ditemukan, dan jaringan internet masih murni mengandalkan *circuit switching* ala telepon jadul?</p>
+                                <textarea class="w-full border border-gray-300 rounded-lg p-3 mt-2 focus:ring-2 focus:ring-primary outline-none" rows="3" placeholder="Tulis analisis Anda di sini..."></textarea>
+                            </div>
+
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">3. Berpikir Komputasional (CT): Mengacu pada kasus perancangan jaringan milik "Ani", jelaskan mengapa strategi menempatkan satu *Switch/Hub* sentral di tengah area perangkat lebih menghemat biaya pengeluaran kabel secara matematis daripada menghubungkan tiap komputer berjejer memanjang dari ujung ke ujung bangunan?</p>
+                                <textarea class="w-full border border-gray-300 rounded-lg p-3 mt-2 focus:ring-2 focus:ring-primary outline-none" rows="3" placeholder="Tulis analisis Anda di sini..."></textarea>
+                            </div>
+
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">4. Ketika terjadi bencana alam besar (seperti gempa vulkanik terisolir) yang memutuskan berbagai jalur kabel bawah laut dan tiang fiber optik di sebuah pulau, mengapa konektivitas via jaringan "Akses Satelit" langsung memegang peranan sangat vital bagi tim evakuasi (SAR), di luar faktor keterbatasannya?</p>
+                                <textarea class="w-full border border-gray-300 rounded-lg p-3 mt-2 focus:ring-2 focus:ring-primary outline-none" rows="3" placeholder="Tulis analisis Anda di sini..."></textarea>
+                            </div>
+
+                            <div class="text-gray-700 text-sm">
+                                <p class="font-bold mb-2">5. Sintesis (Proteksi & Privasi): Buatlah rekomendasi minimal tiga langkah protokol keamanan/privasi isik dan perangkat lunak yang wajid dilakukan seorang pelajar ketika ia terpaksa mengerjakan dan mematangkan ide dokumen proposal perlombaan yang bernilai sangat rahasia menggunakan laptop melalui Wi-Fi Publik di kafe ramai!</p>
+                                <textarea class="w-full border border-gray-300 rounded-lg p-3 mt-2 focus:ring-2 focus:ring-primary outline-none" rows="3" placeholder="Tulis rekomendasi Anda di sini..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center pb-4">
+                        <button type="submit" class="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-colors transform hover:scale-105">
+                            <i class="fa-solid fa-paper-plane mr-2"></i> Kumpulkan & Evaluasi Jawaban
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- 1. SPA Navigation Logic ---
+        function navigateTo(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active state from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Show selected page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // Highlight active nav link
+            const targetLinks = document.querySelectorAll(`.nav-link[data-target="${pageId}"]`);
+            targetLinks.forEach(link => link.classList.add('active'));
+
+            // On mobile, close sidebar after clicking
+            if (window.innerWidth < 768) {
+                toggleSidebar();
+            }
+        }
+
+        // --- 2. Mobile Sidebar Logic ---
+        const btnToggle = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        btnToggle.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        // --- 3. Drag and Drop Logic (Vanilla JS) ---
+        const draggables = document.querySelectorAll('.draggable');
+        const dropZones = document.querySelectorAll('.drop-zone');
+        let totalCorrect = 0;
+        const totalItems = draggables.length;
+
+        // Setup draggables
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', draggable.id);
+                // add slight delay to hide the original element visually while dragging
+                setTimeout(() => {
+                    draggable.classList.add('opacity-50');
+                }, 0);
+            });
+
+            draggable.addEventListener('dragend', () => {
+                draggable.classList.remove('opacity-50');
+            });
+            
+            // Touch support (simple fallback behavior since true HTML5 drag drop is poor on mobile)
+            // Adding a simple click-to-move for mobile users
+            draggable.addEventListener('click', () => {
+                if (window.innerWidth < 768 && draggable.draggable) {
+                    alert("Pada HP, gunakan mode Desktop untuk simulasi geser (drag & drop) atau tunggu versi pembaruan ketuk (tap-to-move).");
+                }
+            });
+        });
+
+        // Setup drop zones
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault(); // allow drop
+                zone.classList.add('drag-over');
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                
+                const draggableId = e.dataTransfer.getData('text/plain');
+                const draggedElement = document.getElementById(draggableId);
+                
+                if (!draggedElement) return;
+
+                const itemType = draggedElement.getAttribute('data-type');
+                const targetCategory = zone.getAttribute('data-category');
+                
+                // Get the inner container for items
+                const dropAreaId = `drop-area-${targetCategory}`;
+                const dropArea = document.getElementById(dropAreaId);
+
+                if (itemType === targetCategory) {
+                    // Correct!
+                    dropArea.appendChild(draggedElement);
+                    
+                    // Style it as correct
+                    draggedElement.classList.remove('border-gray-300', 'text-gray-700', 'hover:border-primary');
+                    draggedElement.classList.add('border-green-500', 'bg-green-50', 'text-green-700', 'cursor-default');
+                    
+                    // Disable dragging
+                    draggedElement.draggable = false;
+                    
+                    totalCorrect++;
+                    checkWin();
+                } else {
+                    // Incorrect - Visual feedback
+                    draggedElement.classList.add('border-red-500', 'text-red-500');
+                    setTimeout(() => {
+                        draggedElement.classList.remove('border-red-500', 'text-red-500');
+                    }, 800);
+                }
+            });
+        });
+
+        function checkWin() {
+            if (totalCorrect === totalItems) {
+                document.getElementById('quiz-feedback').classList.remove('hidden');
+                document.getElementById('item-container').classList.add('hidden');
+            }
+        }
+
+        // Reset Quiz
+        function resetQuiz() {
+            const container = document.getElementById('item-container');
+            const feedback = document.getElementById('quiz-feedback');
+            
+            draggables.forEach(draggable => {
+                container.appendChild(draggable);
+                
+                // Reset styles and state
+                draggable.draggable = true;
+                draggable.classList.remove('border-green-500', 'bg-green-50', 'text-green-700', 'cursor-default');
+                draggable.classList.add('border-gray-300', 'text-gray-700', 'hover:border-primary', 'cursor-grab');
+            });
+            
+            totalCorrect = 0;
+            container.classList.remove('hidden');
+            feedback.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
